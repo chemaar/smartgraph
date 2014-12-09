@@ -17,25 +17,41 @@ import itertools
 import operator
 import unittest
 from igraph import *
+from sklearn import datasets
+import numpy as np
+from sklearn import svm
+import matplotlib.pyplot as plt
 
-if __name__ == "__main__":
-   # Load graph
-   finput = "graphs/primer.gml"
-   g = Graph.Read_GraphML(finput, False)
-   # Extract characteristics
+def todot(g,fout):
+   g.write_dot(fout)
+
+def extract_graph_metrics(g):
    graph_features={}
-    # Basic measures
-   summary(g)
    graph_features["vcount"] = g.vcount() 
    graph_features["ecount"] = g.ecount()
    graph_features["omega"] = g.omega()
    graph_features["alpha"] = g.alpha()
-   # Persist
-   foutput="graphs/primer.dot"
-   g.write_dot(foutput)
-   #SVM
+   return graph_features
+
+
+def extract_graph_metrics_from_file(fin):
+   g = Graph.Read_GraphML(fin, False)
+   return extract_graph_metrics(g)
   
-    
+if __name__ == "__main__":
+   # Load graph
+   g = extract_graph_metrics_from_file("graphs/primer.gml")
+   print (g)
+   # Extract characteristics
+   # Persist
+   #foutput="graphs/primer.dot"
+   #g.write_dot(foutput)
+   #SVM: https://github.com/cjlin1/libsvm/tree/master/python
+   data = g.values()
+   target = g.keys()
+   print (data)
+   print(target)    
+
     
     
     
