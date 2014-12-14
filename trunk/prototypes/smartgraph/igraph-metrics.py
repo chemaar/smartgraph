@@ -35,6 +35,8 @@ def extract_graph_metrics(g):
    graph_features["ecount"] = g.ecount()
    graph_features["omega"] = g.omega()
    graph_features["alpha"] = g.alpha()
+   #graph_features["laplacian_centrality"] = laplacian_centrality(g)
+   graph_features["betweenness_centralization"] = betweenness_centralization(g)
    return graph_features
 
 
@@ -77,36 +79,38 @@ def create_linear_svc_model(data, classification):
 
 def classify_graph(clf, graph_instance):
    dec = clf.decision_function([graph_instance])
-   return dec.shape[1]
+   return dec.shape[1]
+def load_graphs_from_dir(dir):
+   train_graphs = {}
+   onlyfiles = [ f for f in listdir(dir) if isfile(join(dir,f)) ]
+   for f in onlyfiles:
+      train_graphs[f] = extract_graph_metrics_from_file(join(dir,f))
+   return train_graphs
    
 if __name__ == "__main__":
    #Graphs
-   graphs = {}
-   dir="./graphs/train/"
+   train_dir="./graphs/train/"
+   test_dir="./graphs/test/"
    # Load graph an external graph and extract characteristics
-   i = 0
-   onlyfiles = [ f for f in listdir(dir) if isfile(join(dir,f)) ]
-   for f in onlyfiles:
-      graphs[f] = extract_graph_metrics_from_file(join(dir,f))
-           
+   train_graphs=load_graphs_from_dir(train_dir)
+   test_graphs=load_graphs_from_dir(test_dir)
 
+   print train_graphs
    # Persist
    #SVM: https://github.com/cjlin1/libsvm/tree/master/python
    max_classes = 10
    sample_data = []
    sample_classification = []
-   ngraphs = len(graphs.keys())
-   for g in graphs.values():
+   ngraphs = len(train_graphs.keys())
+   for g in train_graphs.values():
        sample_data.append(g.values())
        sample_classification.append(random.randint(0,max_classes))
-   #print (sample_data)    
-   #print (sample_classification)
    #Learn: a list of lists X where each row is the metric of a graph, and a list of classifications (0,1,2)
    #http://scikit-learn.org/stable/modules/svm.html#svm
    clf = create_svc_model(sample_data, sample_classification) 
    #Predict
-   graph_to_predict = [2, 20, 100, 87]
-   print classify_graph(clf,graph_to_predict)
+   for g in test_graphs.values():
+        print classify_graph(clf,g.values())
 
 
 
