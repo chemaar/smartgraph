@@ -22,6 +22,8 @@ import numpy as np
 from sklearn import svm
 import matplotlib.pyplot as plt
 import random
+from os import listdir
+from os.path import isfile, join
 
 
 def todot(g,fout):
@@ -80,21 +82,23 @@ def classify_graph(clf, graph_instance):
 if __name__ == "__main__":
    #Graphs
    graphs = {}
+   dir="./graphs/train/"
    # Load graph an external graph and extract characteristics
-   graphs["graphs/primer.gml"] = extract_graph_metrics_from_file("graphs/primer.gml")
-   #Create a random sample of graphs
-   for i in range (0,5):
-       graphs[i] = extract_graph_metrics(Graph.Erdos_Renyi(n=100, m=20))
+   i = 0
+   onlyfiles = [ f for f in listdir(dir) if isfile(join(dir,f)) ]
+   for f in onlyfiles:
+      graphs[f] = extract_graph_metrics_from_file(join(dir,f))
+           
+
    # Persist
-   #foutput="graphs/primer.dot"
-   #g.write_dot(foutput)
    #SVM: https://github.com/cjlin1/libsvm/tree/master/python
+   max_classes = 10
    sample_data = []
    sample_classification = []
    ngraphs = len(graphs.keys())
    for g in graphs.values():
        sample_data.append(g.values())
-       sample_classification.append(random.randint(0,ngraphs))
+       sample_classification.append(random.randint(0,max_classes))
    #print (sample_data)    
    #print (sample_classification)
    #Learn: a list of lists X where each row is the metric of a graph, and a list of classifications (0,1,2)
