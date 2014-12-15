@@ -132,6 +132,7 @@ def load_graphs_from_dir(dir):
    train_graphs = {}
    onlyfiles = [ f for f in listdir(dir) if isfile(join(dir,f)) ]
    for f in onlyfiles:
+      print ("Loading: "+f+" from "+join(dir,f))
       train_graphs[f] = extract_graph_metrics_from_file(join(dir,f))
    return train_graphs
    
@@ -141,8 +142,6 @@ if __name__ == "__main__":
    test_dir="./graphs/test/"
    # Load graph an external graph and extract characteristics
    train_graphs=load_graphs_from_dir(train_dir)
-   for fgraph in train_graphs.keys():
-       print fgraph
    # Persist
    #SVM: https://github.com/cjlin1/libsvm/tree/master/python
    max_classes = 10
@@ -158,6 +157,7 @@ if __name__ == "__main__":
    test_graphs=load_graphs_from_dir(test_dir)
    for g in test_graphs.values():
         print classify_graph(clf,g.values())
+        print clf.predict(g.values())
 
 
 
